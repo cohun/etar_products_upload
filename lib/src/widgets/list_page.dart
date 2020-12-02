@@ -13,7 +13,7 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  int selectedSort = 2;
+  int selectedSort = 1;
   bool sort = true;
   List<ProductModel> prods = [];
 
@@ -41,8 +41,11 @@ class _ListPageState extends State<ListPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<ProductModel> products = snapshot.data;
-          prods = products;
           if (products.isNotEmpty) {
+
+            if (prods.isEmpty) {
+              prods = products;
+            }
             return _buildTable(context);
           }
           return EmptyContent();
@@ -81,8 +84,9 @@ class _ListPageState extends State<ListPage> {
                 setState(() {
                   sort = !sort;
                   selectedSort = columnIndex;
+                  onSortColumn(columnIndex, ascending);
                 });
-                onSortColumn(columnIndex, ascending);
+
               },
             ),
             DataColumn(
@@ -98,8 +102,9 @@ class _ListPageState extends State<ListPage> {
                 setState(() {
                   sort = !sort;
                   selectedSort = columnIndex;
+                  onSortColumn(columnIndex, ascending);
                 });
-                onSortColumn(columnIndex, ascending);
+
               },
             ),
             DataColumn(
