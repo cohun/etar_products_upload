@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 abstract class AuthProviderBase {
   Future<FirebaseApp> initialize();
 
-  Future<UserCredential> signInWithEmailAndPassword();
+  Future<UserCredential> signInWithEmailAndPassword(String email, String password);
 
   Future<UserCredential> signInWithGoogle();
 

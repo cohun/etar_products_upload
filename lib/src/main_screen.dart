@@ -75,13 +75,15 @@ class _MyHomePageState extends State<MyHomePage> {
     user = await retrieveUser(uid);
   }
 
-  void _signInWithEmail() async {
+  void _signInWithEmail(String email, String password) async {
     try {
-      final creds = await AuthProvider().signInWithEmailAndPassword();
+      final creds = await AuthProvider().signInWithEmailAndPassword(email, password);
       print(creds.user.uid);
       setState(() {
         _signedIn = true;
         _showSignIn = false;
+        name = user.name;
+        company = user.company;
       });
     } catch (e) {
       print('Login failed: $e');

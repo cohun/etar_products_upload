@@ -9,11 +9,11 @@ class _WebAuthProvider implements AuthProviderBase {
   }
 
   @override
-  Future<UserCredential> signInWithEmailAndPassword() async {
+  Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
-              email: "kis.p@gmail.com", password: "TitkosJelszó!");
+              email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
