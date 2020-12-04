@@ -13,7 +13,7 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  int selectedSort = 1;
+  int selectedSort = 0;
   bool sort = true;
   List<ProductModel> prods = [];
 
@@ -177,6 +177,40 @@ class _ListPageState extends State<ListPage> {
                 onSortColumn(columnIndex, ascending);
               },
             ),
+            DataColumn(
+              label: Text(
+                "Gyártó",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.deepOrange,
+                ),
+              ),
+              numeric: false,
+              onSort: (columnIndex, ascending) {
+                setState(() {
+                  sort = !sort;
+                  selectedSort = columnIndex;
+                });
+                onSortColumn(columnIndex, ascending);
+              },
+            ),
+            DataColumn(
+              label: Text(
+                "Egyedi jelölés",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.deepOrange,
+                ),
+              ),
+              numeric: false,
+              onSort: (columnIndex, ascending) {
+                setState(() {
+                  sort = !sort;
+                  selectedSort = columnIndex;
+                });
+                onSortColumn(columnIndex, ascending);
+              },
+            ),
           ],
           rows: prods
               .map(
@@ -202,6 +236,12 @@ class _ListPageState extends State<ListPage> {
                     ),
                     DataCell(
                       Text(product.identifier),
+                    ),
+                    DataCell(
+                      Text(product.manufacturer != null?  product.manufacturer : ''),
+                    ),
+                    DataCell(
+                      Text(product.extraNr != null?  product.extraNr : ''),
                     ),
                   ],
                 ),
@@ -254,6 +294,20 @@ class _ListPageState extends State<ListPage> {
           prods.sort((a, b) => a.identifier.compareTo(b.identifier));
         } else {
           prods.sort((a, b) => b.identifier.compareTo(a.identifier));
+        }
+        break;
+      case 6:
+        if (ascending) {
+          prods.sort((a, b) => a.manufacturer.compareTo(b.manufacturer));
+        } else {
+          prods.sort((a, b) => b.manufacturer.compareTo(a.manufacturer));
+        }
+        break;
+      case 7:
+        if (ascending) {
+          prods.sort((a, b) => a.extraNr.compareTo(b.extraNr));
+        } else {
+          prods.sort((a, b) => b.extraNr.compareTo(a.extraNr));
         }
         break;
       default:

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:etar_products_upload/src/login_page.dart';
 
 import '../models/user_model.dart';
 
@@ -75,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
     user = await retrieveUser(uid);
   }
 
-  void _signInWithEmail(String email, String password) async {
+  void signInWithEmail(String email, String password) async {
     try {
       final creds = await AuthProvider().signInWithEmailAndPassword(email, password);
       print(creds.user.uid);
@@ -201,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     text: 'Email címmel, jelszóval',
                     padding: const EdgeInsets.all(15),
                     icon: Icons.email,
-                    onPressed: _signInWithEmail,
+                    onPressed: () => LoginPage,
                     backgroundColor: Colors.blueGrey[700],
                   ),
                   SignInButton(
