@@ -47,17 +47,19 @@ class _MyHomePageState extends State<MyHomePage> {
   UserModel user = UserModel(name: '', company: '');
   String name = '';
   String company = '';
+  String _password = '';
+  String _email = '';
 
   void _signIn() {
     setState(() {
       _showSignIn = !_showSignIn;
     });
   }
+
   void _signOut() async {
     await FirebaseAuth.instance.signOut();
     setState(() {
       _signedIn = false;
-
     });
   }
 
@@ -67,24 +69,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   Future<UserModel> retrieveUser(String uid) async {
     final ref = FirebaseFirestore.instance.collection('users');
-    return await ref.doc(uid).get().then((value) =>
-        UserModel.fromMap(value.data())
-    );
+    return await ref
+        .doc(uid)
+        .get()
+        .then((value) => UserModel.fromMap(value.data()));
   }
 
- getUser(uid) async {
+  getUser(uid) async {
     user = await retrieveUser(uid);
   }
 
-  void signInWithEmail(String email, String password) async {
+  void getEmail(String email, String password) {
+    _email = email;
+    _password = password;
+  }
+
+  void signInWithEmail() async {
+    await _showMyDialog(getEmail);
     try {
-      final creds = await AuthProvider().signInWithEmailAndPassword(email, password);
-      print(creds.user.uid);
+      final creds =
+          await AuthProvider().signInWithEmailAndPassword(_email, _password);
+      uid = creds.user.uid;
+      await getUser(uid);
       setState(() {
         _signedIn = true;
         _showSignIn = false;
         name = user.name;
         company = user.company;
+        print(name);
+        print(company);
       });
     } catch (e) {
       print('Login failed: $e');
@@ -191,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             if(_signedIn)
-              ProductForm()
+              ProductForm(company: company,)
             else
             Container(
               padding: const EdgeInsets.all(15),
@@ -202,7 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     text: 'Email címmel, jelszóval',
                     padding: const EdgeInsets.all(15),
                     icon: Icons.email,
-                    onPressed: () => LoginPage,
+                    onPressed: signInWithEmail,
                     backgroundColor: Colors.blueGrey[700],
                   ),
                   SignInButton(
@@ -226,8 +239,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: _signedIn != true
                     ? Image.asset("assets/indít.jpg")
                     : ListPage(
-                        company: company,
-                      ),
+                  company: company,
+                ),
               ),
             ),
           ],
@@ -235,4 +248,23 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  Future<void> _showMyDialog(Function getEmail) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                LoginPage(getEmail: getEmail,),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }

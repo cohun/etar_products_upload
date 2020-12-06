@@ -1,3 +1,4 @@
+import 'package:etar_products_upload/constants.dart';
 import 'package:etar_products_upload/models/product_model.dart';
 import 'package:etar_products_upload/src/widgets/empty_content.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _ListPageState extends State<ListPage> {
     return snapshots.map((snapshot) => snapshot.docs
         .map(
           (snapshot) => builder(snapshot.data()),
-        )
+    )
         .toList());
   }
 
@@ -42,8 +43,7 @@ class _ListPageState extends State<ListPage> {
         if (snapshot.hasData) {
           List<ProductModel> products = snapshot.data;
           if (products.isNotEmpty) {
-
-            if (prods.isEmpty) {
+            if (prods.length != products.length) {
               prods = products;
             }
             return _buildTable(context);
@@ -86,7 +86,6 @@ class _ListPageState extends State<ListPage> {
                   selectedSort = columnIndex;
                   onSortColumn(columnIndex, ascending);
                 });
-
               },
             ),
             DataColumn(
@@ -104,7 +103,6 @@ class _ListPageState extends State<ListPage> {
                   selectedSort = columnIndex;
                   onSortColumn(columnIndex, ascending);
                 });
-
               },
             ),
             DataColumn(
@@ -137,7 +135,6 @@ class _ListPageState extends State<ListPage> {
                 setState(() {
                   sort = !sort;
                   selectedSort = columnIndex;
-                  ;
                 });
                 onSortColumn(columnIndex, ascending);
               },
@@ -155,7 +152,6 @@ class _ListPageState extends State<ListPage> {
                 setState(() {
                   sort = !sort;
                   selectedSort = columnIndex;
-                  ;
                 });
                 onSortColumn(columnIndex, ascending);
               },
@@ -182,7 +178,7 @@ class _ListPageState extends State<ListPage> {
                 "Gyártó",
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
-                  color: Colors.deepOrange,
+                  color: lightBlue,
                 ),
               ),
               numeric: false,
@@ -196,11 +192,25 @@ class _ListPageState extends State<ListPage> {
             ),
             DataColumn(
               label: Text(
-                "Egyedi jelölés",
+                "Gyártási év",
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
-                  color: Colors.deepOrange,
+                  color: lightBlue,
                 ),
+              ),
+              numeric: false,
+              onSort: (columnIndex, ascending) {
+                setState(() {
+                  sort = !sort;
+                  selectedSort = columnIndex;
+                });
+                onSortColumn(columnIndex, ascending);
+              },
+            ),
+            DataColumn(
+              label: Text(
+                "Extra jelölés",
+                style: TextStyle(fontStyle: FontStyle.italic, color: lightBlue),
               ),
               numeric: false,
               onSort: (columnIndex, ascending) {
@@ -214,38 +224,51 @@ class _ListPageState extends State<ListPage> {
           ],
           rows: prods
               .map(
-                (product) => DataRow(
+                (product) =>
+                DataRow(
                   cells: [
                     DataCell(
-                      Text(product.productGroup),
+                      Text(
+                          product.productGroup != null
+                              ? product.productGroup
+                              : ''),
                     ),
                     DataCell(
-                      Text(product.type),
+                      Text(product.type != null ? product.type : ''),
                       onTap: () {
                         // write your code..
                       },
                     ),
                     DataCell(
-                      Text(product.length),
+                      Text(product.length != null ? product.length : ''),
                     ),
                     DataCell(
-                      Text(product.description),
+                      Text(product.description != null
+                          ? product.description
+                          : ''),
                     ),
                     DataCell(
-                      Text(product.capacity),
+                      Text(product.capacity != null ? product.capacity : ''),
                     ),
                     DataCell(
-                      Text(product.identifier),
+                      Text(
+                          product.identifier != null ? product.identifier : ''),
                     ),
                     DataCell(
-                      Text(product.manufacturer != null?  product.manufacturer : ''),
+                      Text(product.manufacturer != null ?
+                      product.manufacturer : ''),
                     ),
                     DataCell(
-                      Text(product.extraNr != null?  product.extraNr : ''),
+                      Text(product.productionDate != null ?
+                      product.productionDate : ''),
+                    ),
+                    DataCell(
+                      Text(product.extraNr != null ?
+                      product.extraNr : ''),
                     ),
                   ],
                 ),
-              )
+          )
               .toList(),
         ),
       ),
@@ -304,6 +327,13 @@ class _ListPageState extends State<ListPage> {
         }
         break;
       case 7:
+        if (ascending) {
+          prods.sort((a, b) => a.productionDate.compareTo(b.productionDate));
+        } else {
+          prods.sort((a, b) => b.productionDate.compareTo(a.productionDate));
+        }
+        break;
+      case 8:
         if (ascending) {
           prods.sort((a, b) => a.extraNr.compareTo(b.extraNr));
         } else {

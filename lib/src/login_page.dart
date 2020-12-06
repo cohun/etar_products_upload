@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:etar_products_upload/src/main_screen.dart';
 
 class LoginPage extends StatefulWidget {
+  final Function getEmail;
+
+  const LoginPage({Key key, this.getEmail}) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -22,9 +25,13 @@ class _LoginPageState extends State<LoginPage> {
   }
   void _submit() {
     if (_validateAndSaveForm()) {
-      Navigator.of(context).pop();
+      print(_email);
+      print(_password);
+      widget.getEmail(_email, _password);
+    } else {
+      print('Hiba: ');
     }
-    print('Hiba: ');
+    Navigator.of(context).pop();
   }
 
   @override
@@ -37,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             SizedBox(height: 20.0),
             Text(
-              'Login Information',
+              'Bejelentkezés',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(height: 20.0),
