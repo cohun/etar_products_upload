@@ -1,6 +1,7 @@
 import 'package:etar_products_upload/constants.dart';
 import 'package:etar_products_upload/models/product_model.dart';
 import 'package:etar_products_upload/src/widgets/empty_content.dart';
+import 'package:etar_products_upload/src/widgets/events_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -236,6 +237,15 @@ class _ListPageState extends State<ListPage> {
                     DataCell(
                       Text(product.type != null ? product.type : ''),
                       onTap: () {
+                        print(product.type);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventsPage(
+                                company: widget.company,
+                                productID: product.identifier,
+                              )),
+                        );
                         // write your code..
                       },
                     ),

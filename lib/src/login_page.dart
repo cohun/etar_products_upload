@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 decoration: InputDecoration(labelText: "Jelszó")),
             SizedBox(height: 20.0),
-            RaisedButton(child: Text("LOGIN"), onPressed: _submit,
+            ElevatedButton(child: Text("LOGIN"), onPressed: _submit,
             ),
           ],
         ),
