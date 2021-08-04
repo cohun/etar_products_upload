@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:etar_products_upload/models/inspection_model.dart';
 import 'package:etar_products_upload/models/parts_model.dart';
 import 'package:etar_products_upload/models/product_model.dart';
@@ -9,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'dart:io' show Directory;
-
+import 'package:universal_html/html.dart' as html;
+import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 
 class StartPdf extends StatefulWidget {
   final String company;
@@ -66,9 +65,9 @@ class _StartPdfState extends State<StartPdf> {
       margin: pw.EdgeInsets.all(32),
       theme: pw.ThemeData.withFont(
         base: pw.Font.ttf(
-            await rootBundle.load('lib/assets/fonts/OpenSans-Regular.ttf')),
+            await rootBundle.load('assets/fonts/OpenSans-Regular.ttf')),
         bold: pw.Font.ttf(
-            await rootBundle.load('lib/assets/fonts/OpenSans-Bold.ttf')),
+            await rootBundle.load('assets/fonts/OpenSans-Bold.ttf')),
       ),
     );
   }
@@ -79,10 +78,10 @@ class _StartPdfState extends State<StartPdf> {
     final pw.PageTheme pageTheme = await _myPageTheme();
 
     final _logo = pw.MemoryImage(
-      (await rootBundle.load('lib/assets/images/Logo.png')).buffer.asUint8List(),
+      (await rootBundle.load('assets/Logo.png')).buffer.asUint8List(),
     );
     final _etar = pw.MemoryImage(
-      (await rootBundle.load('lib/assets/images/ETAR1@2x.png')).buffer.asUint8List(),
+      (await rootBundle.load('assets/ETAR1@2x.png')).buffer.asUint8List(),
     );
 
     pdf.addPage(
@@ -243,7 +242,6 @@ class _StartPdfState extends State<StartPdf> {
       ,
     );
 
-    return pdf.save();
   }
 
   //***************************************************************************
@@ -400,40 +398,19 @@ class _StartPdfState extends State<StartPdf> {
 
   //***************************************************************************
 
-  Future<void> _saveAsFile() async {
-    // final Directory appDocDir = await getApplicationDocumentsDirectory();
-    // final String appDocPath = appDocDir.path;
-    // final File file = File(appDocPath + '/' + 'document.pdf');
-    // print('Save as file ${file.path} ...');
-    // await file.writeAsBytes((await generateDocument(PdfPageFormat.a4)).save());
-    // Navigator.push<dynamic>(
-    //   context,
-    //   MaterialPageRoute<dynamic>(
-    //       builder: (BuildContext context) => PdfViewer(file: file)),
-    // );
-  }
-
-
-
-
   Future savePdf() async {
-    // if(kIsWeb)
-    //   print("It's web");
-    //
-    // else if(Platform.isAndroid){
-    //   print("it's Android"); }
-    // // Directory documentDirectory = await getApplicationDocumentsDirectory();
-    //
-    // Directory tempDirectory = await getTemporaryDirectory();
-    //
-    // // String documentPath = documentDirectory.path;
-    // String tempPath = tempDirectory.path;
-    //
-    // File file = File('$tempPath/cert.pdf');
-    // file.writeAsBytesSync(await pdf.save());
-    //
-    // File tempFile = File('$tempPath/jkv_${widget.productId}.pdf');
-    // tempFile.writeAsBytesSync(await pdf.save());
+
+    final bytes = await pdf.save();
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement()
+      ..href = url
+      ..style.display = 'none'
+      ..download = 'cert.pdf';
+    html.document.body?.children.add(anchor);
+    anchor.click();
+    html.document.body?.children.remove(anchor);
+    html.Url.revokeObjectUrl(url);
   }
 
   @override
@@ -684,7 +661,19 @@ class _StartPdfState extends State<StartPdf> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: widget.color,
-        onPressed: () {
+        onPressed: () async {
+          ProgressDialog pd = ProgressDialog(context: context);
+          pd.show(max: 100, msg: 'Jegyzőkönyv készül...');
+            await writeOnPdf();
+            await savePdf();
+
+            final bytes = await pdf.save();
+            final blob = html.Blob([bytes], 'application/pdf');
+            final url = html.Url.createObjectUrlFromBlob(blob);
+            html.window.open(url, '_blank');
+          pd.close();
+            html.Url.revokeObjectUrl(url);
+
      },
         child: Icon(
           Icons.picture_as_pdf_rounded,
@@ -752,7 +741,7 @@ class _StartPdfState extends State<StartPdf> {
           print('null is the result');
         }
       });
-    } on PlatformException catch (e) {
+    } on PlatformException {
       AlertDialog(
         title: Text('Művelet sikertelen'),);
     }
@@ -776,7 +765,7 @@ class _StartPdfState extends State<StartPdf> {
           print('null is the result');
         }
       });
-    } on PlatformException catch (e) {
+    } on PlatformException {
       AlertDialog(
         title: Text('Művelet sikertelen'),);
     }
