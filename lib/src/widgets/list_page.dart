@@ -74,6 +74,16 @@ class _ListPageState extends State<ListPage> {
           columns: [
             DataColumn(
               label: Text(
+                "Jegyzőkönyv",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.teal,
+                ),
+              ),
+              numeric: false,
+            ),
+            DataColumn(
+              label: Text(
                 "Termékkör",
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
@@ -229,10 +239,38 @@ class _ListPageState extends State<ListPage> {
                 DataRow(
                   cells: [
                     DataCell(
-                      Text(
-                          product.productGroup != null
-                              ? product.productGroup
-                              : ''),
+                      ElevatedButton(
+                        onPressed: () {
+                          print(product.type);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventsPage(
+                                      company: widget.company,
+                                      productID: product.identifier,
+                                    )),
+                          );
+                          // write your code..
+                        },
+                        child: Text('Nyomtat'),
+                      ),
+                      onTap: () {
+                        print(product.type);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventsPage(
+                                    company: widget.company,
+                                    productID: product.identifier,
+                                  )),
+                        );
+                        // write your code..
+                      },
+                    ),
+                    DataCell(
+                      Text(product.productGroup != null
+                          ? product.productGroup
+                          : ''),
                     ),
                     DataCell(
                       Text(product.type != null ? product.type : ''),
